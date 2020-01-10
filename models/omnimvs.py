@@ -60,9 +60,8 @@ class OmniMVS(nn.Module):
                 # warp feature
                 grid = self.sweep.get_grid(cam_idx, d)
                 grid = grid.type_as(feat)
-                grid.requires_grad_(False)
-                feat = F.grid_sample(feat, grid.unsqueeze(0), align_corners=False)
-                warps[0, :, d_idx:d_idx + 1, :, :] = feat.transpose(0, 1)
+                grid.unsqueeze_(0)
+                warps[0, :, d_idx:d_idx + 1, :, :] = F.grid_sample(feat, grid, align_corners=False).transpose(0, 1)
             warps = self.transference(warps)
             costs[:, 32 * cam_idx:32 * (cam_idx + 1), :, :, :] = warps
 
