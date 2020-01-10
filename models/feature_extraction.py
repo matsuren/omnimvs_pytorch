@@ -6,17 +6,15 @@ import torch.nn.functional as F
 class BasicBlock(nn.Module):
     def __init__(self, in_planes=32, planes=32, dilate=1):
         super(BasicBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_planes, planes, 3, 1, dilate, dilate, bias=False)
-        self.bn1 = nn.BatchNorm2d(planes)
+        self.conv1 = nn.Conv2d(in_planes, planes, 3, 1, dilate, dilate, bias=True)
         self.relu1 = nn.ReLU(inplace=True)
-        self.conv2 = nn.Conv2d(planes, planes, 3, 1, dilate, dilate, bias=False)
-        self.bn2 = nn.BatchNorm2d(planes)
+        self.conv2 = nn.Conv2d(planes, planes, 3, 1, dilate, dilate, bias=True)
         self.relu2 = nn.ReLU(inplace=True)
 
     def forward(self, x):
         identity = x
-        out = self.relu1(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
+        out = self.relu1(self.conv1(x))
+        out = self.conv2(out)
         out += identity
         out = self.relu2(out)
         return out
@@ -26,8 +24,8 @@ class UnaryExtraction(nn.Module):
     def __init__(self, input_channel=1):
         super(UnaryExtraction, self).__init__()
         self.conv1 = nn.Sequential(
-            nn.Conv2d(input_channel, 32, kernel_size=5, stride=2, padding=2, bias=False),
-            nn.BatchNorm2d(32), nn.ReLU(inplace=True))
+            nn.Conv2d(input_channel, 32, kernel_size=5, stride=2, padding=2, bias=True),
+            nn.ReLU(inplace=True))
         # conv2_11
         self.conv2_11 = self._make_layer(BasicBlock, 5)
         # conv12_17 with dilate
