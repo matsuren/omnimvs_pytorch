@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*.lock
+*.pth
+
+.ipynb_checkpoints/
+.idea/
+
+datasets

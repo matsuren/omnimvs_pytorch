@@ -1,0 +1,3 @@
+[submodule "ocamcalib_undistort"]
+	path = ocamcalib_undistort
+	url = git@github.com:matsuren/ocamcalib_undistort.git
