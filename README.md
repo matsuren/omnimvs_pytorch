@@ -41,7 +41,13 @@ After extraction, please put the dataset folder in the following places.
             ├── ...
 
 ## Training
-Under construction. Please check `notebook/script.ipynb` for now.
+Run with default parameter (input image size: 500x480, output depth size: 512x256, disparity: 64). 
+```bash
+python train.py ./datasets/omnithings
+```
+These default parameters are smaller than the ones reported in their paper due to GPU memory limitation.
+You can change parameters by arguments (`-h` option for details). 
+
 
 
 
