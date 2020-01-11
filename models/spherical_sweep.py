@@ -87,6 +87,19 @@ def spherical_sweep_grid(ocam, Tcw_bytes, center_bytes, depth, h=320, w=640):
 
 class SphericalSweeping(object):
     def __init__(self, root_dir, h=320, w=640, fov=220):
+        """ SphericalSweeping module.
+
+        Parameters
+        ----------
+        root_dir : str
+            root directory includes poses.txt, ocam{i}.txt where i = [1,2,3,4]
+        h : int
+            output image height
+        w : int
+            output image width
+        fov : float
+            field of view of camera in degree
+        """
         self.h = h
         self.w = w
         # load poses T cam <- world
@@ -127,25 +140,18 @@ class SphericalSweeping(object):
                                     w=self.w)
         return grid
 
-    # def get_valid_mask(self, idx):
-    #     """ Get valid mask.
-    #
-    #     Parameters
-    #     ----------
-    #     idx : int
-    #         camera index
-    #
-    #     Returns
-    #     -------
-    #     valid : numpy array
-    #         2D (height x width) array mask. 255:valid, 0:invalid
-    #     """
-    #     valid = self._ocams[idx].valid_area()
-    #     phi_xy, theta_xy = spherical_grid(self.h, self.w)
-    #     point3D = np.stack(
-    #         [np.sin(phi_xy) * np.cos(theta_xy), np.sin(theta_xy), np.cos(phi_xy) * np.cos(theta_xy)]).reshape(3, -1)
-    #     mapx, mapy = self._ocams[idx].world2cam(point3D)
-    #     mapx = mapx.reshape(self.h, self.w)
-    #     mapy = mapy.reshape(self.h, self.w)
-    #     valid = cv2.remap(valid, mapx, mapy, cv2.INTER_LINEAR)
-    #     return valid
+    def valid_area(self, idx):
+        """ Get valid area of fisheye image based on field of view (fov).
+
+        Parameters
+        ----------
+        idx : int
+            camera index
+
+        Returns
+        -------
+        valid : numpy array
+            2D (height x width) array mask. 255:valid, 0:invalid
+        """
+        valid = self._ocams[idx].valid_area()
+        return valid
