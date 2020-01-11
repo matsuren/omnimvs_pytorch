@@ -2,16 +2,19 @@
 An unofficial PyTorch implementation of ICCV 2019 paper 
 ["OmniMVS: End-to-End Learning for Omnidirectional Stereo Matching"](http://openaccess.thecvf.com/content_ICCV_2019/papers/Won_OmniMVS_End-to-End_Learning_for_Omnidirectional_Stereo_Matching_ICCV_2019_paper.pdf).
 
-Under construction
 
 ## Requirements
 You need Python 3.6 or later for f-Strings.
 
 Python libraries:
 - PyTorch >= 1.3.1
+- torchvision
 - SciPy >= 1.4.0 (scipy.spatial.transform)
-- Open3D >= 0.8
 - OpenCV
+- tensorboard
+- tqdm
+- Open3D >= 0.8 (only for visualization)
+
 
 ## Setup
 ### Clone repository
@@ -39,5 +42,6 @@ After extraction, please put the dataset folder in the following places.
 
 ## Training
 Under construction. Please check `notebook/script.ipynb` for now.
+
 
 
