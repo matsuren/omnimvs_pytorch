@@ -27,10 +27,10 @@ class OmniMVS(nn.Module):
         self.feature_extraction = UnaryExtraction()
         self.sweep = sweep
         self.transference = nn.Sequential(
-            nn.Conv3d(32, 32, kernel_size=(1, 3, 3), stride=(1, 2, 2), padding=(0, 1, 1), bias=True),
+            nn.Conv3d(32, 32, kernel_size=(1, 3, 3), stride=(1, 2, 2), padding=(0, 1, 1), bias=False),
             nn.ReLU(inplace=True))
         self.fusion = nn.Sequential(
-            nn.Conv3d(32 * len(self.cam_list), 64, kernel_size=3, stride=1, padding=1, bias=True),
+            nn.Conv3d(32 * len(self.cam_list), 64, kernel_size=3, stride=1, padding=1, bias=False),
             nn.ReLU(inplace=True))
         self.cost_regularization = CostVolumeComputation()
 

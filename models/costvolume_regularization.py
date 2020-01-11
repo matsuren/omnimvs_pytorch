@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 def conv_3d_relu(inplanes, planes, kernel_size, stride, pad):
     return nn.Sequential(
-        nn.Conv3d(inplanes, planes, kernel_size=kernel_size, stride=stride, padding=pad, bias=True),
+        nn.Conv3d(inplanes, planes, kernel_size=kernel_size, stride=stride, padding=pad, bias=False),
         nn.ReLU(inplace=True))
 
 
@@ -31,19 +31,19 @@ class CostVolumeComputation(nn.Module):
 
         # deconv
         planes = 128
-        self.deconv1 = nn.ConvTranspose3d(planes * 2, planes, 3, 2, 1, bias=True)
+        self.deconv1 = nn.ConvTranspose3d(planes * 2, planes, 3, 2, 1, bias=False)
         self.relu1 = nn.ReLU(inplace=True)
 
-        self.deconv2 = nn.ConvTranspose3d(planes, planes, 3, 2, 1, bias=True)
+        self.deconv2 = nn.ConvTranspose3d(planes, planes, 3, 2, 1, bias=False)
         self.relu2 = nn.ReLU(inplace=True)
-        self.deconv3 = nn.ConvTranspose3d(planes, planes, 3, 2, 1, bias=True)
+        self.deconv3 = nn.ConvTranspose3d(planes, planes, 3, 2, 1, bias=False)
         self.relu3 = nn.ReLU(inplace=True)
 
         planes = 64
-        self.deconv4 = nn.ConvTranspose3d(planes * 2, planes, 3, 2, 1, bias=True)
+        self.deconv4 = nn.ConvTranspose3d(planes * 2, planes, 3, 2, 1, bias=False)
         self.relu4 = nn.ReLU(inplace=True)
 
-        self.deconv5 = nn.ConvTranspose3d(planes, 1, 3, 2, 1, bias=True)
+        self.deconv5 = nn.ConvTranspose3d(planes, 1, 3, 2, 1, bias=False)
 
     def _make_layer(self, block, planes, blocks):
         layers = []
