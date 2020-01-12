@@ -49,7 +49,7 @@ else:
     parser.add_argument('--output_width', type=int, default=512, metavar='N', help='output depth width')
     parser.add_argument('--output_height', type=int, default=256, metavar='N', help='output depth height')
 parser.add_argument('-j', '--workers', default=6, type=int, metavar='N', help='number of data loading workers')
-parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float, metavar='LR', help='initial learning rate')
+parser.add_argument('--lr', '--learning-rate', default=5e-4, type=float, metavar='LR', help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M', help='momentum for sgd')
 parser.add_argument('--arch', default='omni_small', type=str, help='architecture name for log folder')
 parser.add_argument('--log-interval', type=int, default=1, metavar='N', help='tensorboard log interval')
