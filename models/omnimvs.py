@@ -1,12 +1,12 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import random
 
 import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
-from models.feature_extraction import UnaryExtraction
 from models.costvolume_regularization import CostVolumeComputation
+from models.feature_extraction import UnaryExtraction
 
 
 class OmniMVS(nn.Module):

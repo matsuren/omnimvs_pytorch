@@ -1,11 +1,9 @@
-import sys
 from os.path import join
-import numpy as np
-import cv2
-from torch.utils.data import Dataset
 
-sys.path.insert(0, '../../ocamcalib_undistort')
+import cv2
+import numpy as np
 from ocamcamera import OcamCamera
+from torch.utils.data import Dataset
 
 
 class OmniStereoDataset(Dataset):

@@ -1,13 +1,10 @@
+from functools import lru_cache
 from os.path import join
+
 import numpy as np
 import torch
-from functools import lru_cache
-from scipy.spatial.transform import Rotation as Rot
-import cv2
-import sys
-
-sys.path.insert(0, '../../ocamcalib_undistort')
 from ocamcamera import OcamCamera
+from scipy.spatial.transform import Rotation as Rot
 
 
 def load_poses(pose_file):

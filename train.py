@@ -1,7 +1,6 @@
 import argparse
 import json
 import os
-import sys
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor  # To share lru_cache
 from datetime import datetime
@@ -21,9 +20,6 @@ from dataloader.custom_transforms import Resize, ToTensor, Normalize
 from models import OmniMVS
 from models import SphericalSweeping
 from utils import InvDepthConverter
-
-sys.path.insert(0, './ocamcalib_undistort')
-from ocamcalib_undistort.ocamcamera import OcamCamera
 
 parser = argparse.ArgumentParser(description='Training for OmniMVS',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -88,7 +84,7 @@ def main():
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
     # optimizer = torch.optim.Adam(model.parameters(),lr=3e-4)
     print('=> setting scheduler')
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2*args.epochs//3, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2 * args.epochs // 3, gamma=0.1)
 
     start_epoch = 0
     # Load pretrained model

@@ -15,13 +15,14 @@ Python libraries:
 - tqdm
 - Open3D >= 0.8 (only for visualization)
 
-
 ## Setup
 ### Clone repository
-Please run the following command. A option `--recursive` is needed as [Python OcamCalib undistortion library](https://github.com/matsuren/ocamcalib_undistort) is 
-included as submodule.
+Please run the following command. 
+On the first line, [Python OcamCalib undistortion library](https://github.com/matsuren/ocamcalib_undistort) is 
+installed for undistortion of [Davide Scaramuzza's OcamCalib camera model](https://sites.google.com/site/scarabotix/ocamcalib-toolbox).
 ```bash
-git clone --recursive https://github.com/matsuren/omnimvs_pytorch.git
+pip install git+git://github.com/matsuren/ocamcalib_undistort.git
+git clone https://github.com/matsuren/omnimvs_pytorch.git
 ```
 
 ### Download dataset
