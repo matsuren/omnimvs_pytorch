@@ -115,6 +115,7 @@ def main():
     with open(join(log_folder, 'args.json'), 'w') as f:
         json.dump(vars(args), f, indent=1)
     writer = SummaryWriter(log_dir=log_folder)
+    writer.add_text('args', json.dumps(vars(args), indent=1))
 
     # Setup dataloader
     image_size = (args.input_width, args.input_height)
@@ -161,6 +162,7 @@ def main():
         print(f"Epoch:{epoch}/{args.epochs}, Val Loss average:{ave_loss:.4f}")
         scheduler.step()
 
+    writer.close()
     print('Finish training')
 
 
