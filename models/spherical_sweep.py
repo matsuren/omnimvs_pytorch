@@ -40,7 +40,7 @@ def spherical_grid(h, w):
     phi_xy : numpy array
         phi value (-np.pi < phi < np.pi)
     theta_xy : numpy array
-        theta value (-np.pi/2 < phi < np.pi/2)
+        theta value (-np.pi/2 < theta < np.pi/2)
     """
     p = 2 * np.pi / w
     th = np.pi / h

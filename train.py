@@ -19,7 +19,7 @@ from dataloader import OmniStereoDataset
 from dataloader.custom_transforms import Resize, ToTensor, Normalize
 from models import OmniMVS
 from models import SphericalSweeping
-from utils import InvDepthConverter
+from utils import InvDepthConverter, evaluation_metrics
 
 parser = argparse.ArgumentParser(description='Training for OmniMVS',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -52,7 +52,7 @@ parser.add_argument('-j', '--workers', default=6, type=int, metavar='N', help='n
 parser.add_argument('--lr', '--learning-rate', default=5e-4, type=float, metavar='LR', help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M', help='momentum for sgd')
 parser.add_argument('--arch', default='omni_small', type=str, help='architecture name for log folder')
-parser.add_argument('--log-interval', type=int, default=1, metavar='N', help='tensorboard log interval')
+parser.add_argument('--log-interval', type=int, default=5, metavar='N', help='tensorboard log interval')
 
 
 def main():
@@ -199,7 +199,7 @@ def train(args, model, train_loader, optimizer, writer, epoch, device):
         niter = epoch * len(train_loader) + idx
         if idx % args.log_interval == 0:
             writer.add_scalar('train/loss', loss.item(), niter)
-        if idx % 100 * args.log_interval == 0:
+        if idx % 200 * args.log_interval == 0:
             imgs = []
             for cam in model.cam_list:
                 imgs.append(0.5 * batch[cam][0] + 0.5)
@@ -220,6 +220,8 @@ def validation(args, model, val_loader, writer, epoch, device):
     invd_max = model.inv_depths[-1]
     converter = InvDepthConverter(args.ndisp, invd_0, invd_max)
 
+    preds = []
+    gts = []
     losses = []
     model.eval()
     pbar = tqdm(val_loader)
@@ -235,6 +237,9 @@ def validation(args, model, val_loader, writer, epoch, device):
             gt_invd_idx = converter.invdepth_to_index(gt_idepth)
             loss = nn.L1Loss()(pred, gt_invd_idx)
             losses.append(loss.item())
+            # save for evaluation
+            preds.append(pred.cpu())
+            gts.append(gt_invd_idx.cpu())
 
         # update progress bar
         display = OrderedDict(epoch=f"{epoch:>2}", loss=f"{losses[-1]:.4f}")
@@ -244,7 +249,7 @@ def validation(args, model, val_loader, writer, epoch, device):
         niter = epoch * len(val_loader) + idx
         if idx % args.log_interval == 0:
             writer.add_scalar('val/loss', loss.item(), niter)
-        if idx % 100 * args.log_interval == 0:
+        if idx % 200 * args.log_interval == 0:
             imgs = []
             for cam in model.cam_list:
                 imgs.append(0.5 * batch[cam][0] + 0.5)
@@ -253,6 +258,14 @@ def validation(args, model, val_loader, writer, epoch, device):
             writer.add_image('val/pred', pred / model.ndisp, niter)
             writer.add_image('val/gt', gt_invd_idx / model.ndisp, niter)
 
+    preds = torch.cat(preds)
+    gts = torch.cat(gts)
+    errors, error_names = evaluation_metrics(preds, gts, args.ndisp)
+    for name, val in zip(error_names, errors):
+        writer.add_scalar(f'val_metrics/{name}', val, epoch)
+    print("Evaluation metrics: ")
+    print("{:>8}, {:>8}, {:>8}, {:>8}, {:>8}".format(*error_names))
+    print("{:8.4f}, {:8.4f}, {:8.4f}, {:8.4f}, {:8.4f}".format(*errors))
     # End of one epoch
     ave_loss = sum(losses) / len(losses)
     writer.add_scalar('val/loss_ave', ave_loss, epoch)
