@@ -14,5 +14,5 @@ class InvDepthConverter(object):
         return invd_idx
 
     def index_to_invdepth(self, invd_idx):
-        idepth = self.invd + invd_idx * (self._invd_max - self._invd_0) / (self._ndisp - 1)
+        idepth = self._invd_0 + invd_idx * (self._invd_max - self._invd_0) / (self._ndisp - 1)
         return idepth
