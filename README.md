@@ -49,6 +49,14 @@ python train.py ./datasets/omnithings
 These default parameters are smaller than the ones reported in their paper due to GPU memory limitation.
 You can change parameters by arguments (`-h` option for details). 
 
+## Results
+Predictions on OmniHouse after training on OmniThings (ndips=48).
+
+![OmniHouse1](imgs/house1.png) 
+
+![OmniHouse2](imgs/house2.png) 
+
+![OmniHouse3](imgs/house3.png) 
 
 
 

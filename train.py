@@ -29,7 +29,7 @@ parser.add_argument('-t', '--train-list', default='./dataloader/omnithings_train
                     type=str, help='Text file includes filenames for training')
 parser.add_argument('-v', '--val-list', default='./dataloader/omnithings_val.txt',
                     type=str, help='Text file includes filenames for validation')
-parser.add_argument('--epochs', default=15, type=int, metavar='N', help='total epochs')
+parser.add_argument('--epochs', default=21, type=int, metavar='N', help='total epochs')
 parser.add_argument('--pretrained', default=None, metavar='PATH',
                     help='path to pre-trained model')
 parser.add_argument('-b', '--batch-size', default=1, type=int, metavar='N', help='mini-batch size')
