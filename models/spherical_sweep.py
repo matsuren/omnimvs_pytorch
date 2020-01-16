@@ -100,13 +100,14 @@ class SphericalSweeping(object):
         self.h = h
         self.w = w
         # load poses T cam <- world
-        self.poses = load_poses(join(root_dir, 'poses.txt'))
-        self._Tcw_bytes = [T.tobytes() for T in self.poses]
+        self.poses_cw = load_poses(join(root_dir, 'poses.txt'))
+        self._Tcw_bytes = [T.tobytes() for T in self.poses_cw]
 
         # estimate rig center
         center = []
-        for it in self.poses:
-            center.append(it[:3, 3])
+        for T in self.poses_cw:
+            camera_position = -T[:3, :3].T.dot(T[:3, 3])
+            center.append(camera_position)
         center = np.array(center).mean(axis=0)
         self._center = center
         self._center_bytes = center.tobytes()
