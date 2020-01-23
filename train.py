@@ -34,6 +34,7 @@ parser.add_argument('--pretrained', default=None, metavar='PATH',
                     help='path to pre-trained model')
 parser.add_argument('-b', '--batch-size', default=1, type=int, metavar='N', help='mini-batch size')
 parser.add_argument('--min_depth', type=float, default=0.55, help='minimum depth in m')
+parser.add_argument('--fov', type=float, default=220, help='field of view of the camera in degree')
 if False:
     # Paper setting
     parser.add_argument('--ndisp', type=int, default=192, metavar='N', help='number of disparity')
@@ -67,7 +68,7 @@ def main():
 
     ###############################
     # Setup model
-    sweep = SphericalSweeping(args.root_dir, h=args.output_height, w=args.output_width)
+    sweep = SphericalSweeping(args.root_dir, h=args.output_height, w=args.output_width, fov=args.fov)
     model = OmniMVS(sweep, args.ndisp, args.min_depth, h=args.output_height, w=args.output_width)
     model = model.to(device)
 
@@ -121,9 +122,9 @@ def main():
     image_size = (args.input_width, args.input_height)
     depth_size = (args.output_width, args.output_height)
     train_transform = transforms.Compose([Resize(image_size, depth_size), ToTensor(), Normalize()])
-    trainset = OmniStereoDataset(args.root_dir, args.train_list, transform=train_transform)
+    trainset = OmniStereoDataset(args.root_dir, args.train_list, transform=train_transform, fov=args.fov)
     val_transform = transforms.Compose([Resize(image_size, depth_size), ToTensor(), Normalize()])
-    valset = OmniStereoDataset(args.root_dir, args.val_list, transform=val_transform)
+    valset = OmniStereoDataset(args.root_dir, args.val_list, transform=val_transform, fov=args.fov)
     print(f'{len(trainset)} samples for training.')
     print(f'{len(valset)} samples for validation.')
     train_loader = DataLoader(trainset, args.batch_size, shuffle=True, num_workers=args.workers, pin_memory=True)
@@ -199,7 +200,7 @@ def train(args, model, train_loader, optimizer, writer, epoch, device):
         niter = epoch * len(train_loader) + idx
         if idx % args.log_interval == 0:
             writer.add_scalar('train/loss', loss.item(), niter)
-        if idx % 200 * args.log_interval == 0:
+        if idx % (200 * args.log_interval) == 0:
             imgs = []
             for cam in model.cam_list:
                 imgs.append(0.5 * batch[cam][0] + 0.5)
