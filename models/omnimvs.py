@@ -42,7 +42,7 @@ class OmniMVS(nn.Module):
         device = batch[self.cam_list[0]].device
         dtype = batch[self.cam_list[0]].dtype
         batch_size = batch[self.cam_list[0]].size(0)
-        assert batch_size == 1, "batch_size should be one"
+        # assert batch_size == 1, "batch_size should be one"
 
         # define emply cost volume
         costs = torch.zeros((batch_size, 32 * len(self.cam_list), self.ndisp // 2, self.h // 2, self.w // 2),
@@ -60,8 +60,8 @@ class OmniMVS(nn.Module):
                 # warp feature
                 grid = self.sweep.get_grid(cam_idx, d)
                 grid = grid.type_as(feat)
-                grid.unsqueeze_(0)
-                warps[0, :, d_idx:d_idx + 1, :, :] = F.grid_sample(feat, grid, align_corners=False).transpose(0, 1)
+                grid = grid.unsqueeze(0).expand(batch_size, -1, -1, -1)
+                warps[:, :, d_idx:d_idx + 1, :, :] = F.grid_sample(feat, grid, align_corners=False).unsqueeze(2)
             warps = self.transference(warps)
             costs[:, 32 * cam_idx:32 * (cam_idx + 1), :, :, :] = warps
 

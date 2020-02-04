@@ -108,6 +108,9 @@ def main():
         scheduler.load_state_dict(checkpoint['scheduler'])
         print("=> Resume training from epoch {}".format(start_epoch))
 
+    #
+    model = nn.DataParallel(model)
+
     # Setup solver
     timestamp = datetime.now().strftime("%m%d-%H%M")
     log_folder = join('checkpoints', f'{args.arch}_{timestamp}')
@@ -143,34 +146,34 @@ def main():
         ave_loss = train(args, model, train_loader, optimizer, writer, epoch, device)
         print(f"Epoch:{epoch}/{args.epochs}, Train Loss average:{ave_loss:.4f}")
 
-        # save data here
-        save_data = {
-            'epoch': epoch,
-            'state_dict': model.state_dict(),
-            'optimizer': optimizer.state_dict(),
-            'scheduler': scheduler.state_dict(),
-            'ave_loss': ave_loss,
-            'ndisp': model.ndisp,
-            'min_depth': model.min_depth,
-            'output_width': model.w,
-            'output_height': model.h,
-        }
-        # save images
-        torch.save(save_data, join(log_folder, f'checkpoints_{epoch}.pth'))
-
         # validation
         ave_loss = validation(args, model, val_loader, writer, epoch, device)
         print(f"Epoch:{epoch}/{args.epochs}, Val Loss average:{ave_loss:.4f}")
         scheduler.step()
+
+        # save data here
+        save_data = {
+            'epoch': epoch + 1,
+            'state_dict': model.module.state_dict(),
+            'optimizer': optimizer.state_dict(),
+            'scheduler': scheduler.state_dict(),
+            'ave_loss': ave_loss,
+            'ndisp': model.module.ndisp,
+            'min_depth': model.module.min_depth,
+            'output_width': model.module.w,
+            'output_height': model.module.h,
+        }
+        torch.save(save_data, join(log_folder, f'checkpoints_{epoch}.pth'))
 
     writer.close()
     print('Finish training')
 
 
 def train(args, model, train_loader, optimizer, writer, epoch, device):
-    invd_0 = model.inv_depths[0]
-    invd_max = model.inv_depths[-1]
+    invd_0 = model.module.inv_depths[0]
+    invd_max = model.module.inv_depths[-1]
     converter = InvDepthConverter(args.ndisp, invd_0, invd_max)
+    ndisp = model.module.ndisp
 
     losses = []
     model.train()
@@ -202,12 +205,12 @@ def train(args, model, train_loader, optimizer, writer, epoch, device):
             writer.add_scalar('train/loss', loss.item(), niter)
         if idx % (200 * args.log_interval) == 0:
             imgs = []
-            for cam in model.cam_list:
+            for cam in model.module.cam_list:
                 imgs.append(0.5 * batch[cam][0] + 0.5)
             img_grid = make_grid(imgs, nrow=2, padding=5, pad_value=1)
             writer.add_image('train/fisheye', img_grid, niter)
-            writer.add_image('train/pred', pred / model.ndisp, niter)
-            writer.add_image('train/gt', gt_invd_idx / model.ndisp, niter)
+            writer.add_image('train/pred', pred[:1] / ndisp, niter)
+            writer.add_image('train/gt', gt_invd_idx[:1] / ndisp, niter)
 
     # End of one epoch
     ave_loss = sum(losses) / len(losses)
@@ -217,9 +220,10 @@ def train(args, model, train_loader, optimizer, writer, epoch, device):
 
 
 def validation(args, model, val_loader, writer, epoch, device):
-    invd_0 = model.inv_depths[0]
-    invd_max = model.inv_depths[-1]
+    invd_0 = model.module.inv_depths[0]
+    invd_max = model.module.inv_depths[-1]
     converter = InvDepthConverter(args.ndisp, invd_0, invd_max)
+    ndisp = model.module.ndisp
 
     preds = []
     gts = []
@@ -252,12 +256,12 @@ def validation(args, model, val_loader, writer, epoch, device):
             writer.add_scalar('val/loss', loss.item(), niter)
         if idx % 200 * args.log_interval == 0:
             imgs = []
-            for cam in model.cam_list:
+            for cam in model.module.cam_list:
                 imgs.append(0.5 * batch[cam][0] + 0.5)
             img_grid = make_grid(imgs, nrow=2, padding=5, pad_value=1)
             writer.add_image('val/fisheye', img_grid, niter)
-            writer.add_image('val/pred', pred / model.ndisp, niter)
-            writer.add_image('val/gt', gt_invd_idx / model.ndisp, niter)
+            writer.add_image('val/pred', pred[:1] / ndisp, niter)
+            writer.add_image('val/gt', gt_invd_idx[:1] / ndisp, niter)
 
     preds = torch.cat(preds)
     gts = torch.cat(gts)
