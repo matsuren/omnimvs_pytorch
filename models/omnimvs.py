@@ -49,6 +49,7 @@ class OmniMVS(nn.Module):
                             device=device, dtype=dtype)
 
         # construct cost volume
+        cost_cnt = 0
         for cam_idx in cam_idxs:
             key = self.cam_list[cam_idx]
             # feature extraction
@@ -63,7 +64,8 @@ class OmniMVS(nn.Module):
                 grid = grid.unsqueeze(0).expand(batch_size, -1, -1, -1)
                 warps[:, :, d_idx:d_idx + 1, :, :] = F.grid_sample(feat, grid, align_corners=False).unsqueeze(2)
             warps = self.transference(warps)
-            costs[:, 32 * cam_idx:32 * (cam_idx + 1), :, :, :] = warps
+            costs[:, 32 * cost_cnt:32 * (cost_cnt + 1), :, :, :] = warps
+            cost_cnt += 1
 
         # fusion
         costs = self.fusion(costs)
