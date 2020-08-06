@@ -49,6 +49,8 @@ python train.py ./datasets/omnithings
 These default parameters are smaller than the ones reported in their paper due to GPU memory limitation.
 You can change parameters by arguments (`-h` option for details). 
 
+A pre-trained model (ndisp=48) is available [here](https://1drv.ms/u/s!Ao6oo2sMuht4tyd5tU1OS0hNjzNb?e=rez8E0).
+
 ## Results
 Predictions on OmniHouse after training on OmniThings (ndips=48).
 
