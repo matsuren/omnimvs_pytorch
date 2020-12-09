@@ -41,6 +41,11 @@ After extraction, please put the dataset folder in the following places.
             ├── ocam1.txt
             ├── ...
 
+:exclamation:Attention:exclamation:  
+For some reasons, some filenames are inconsistent in `OmniThings`.
+For instance, the first image is named `00001.png` in `cam1`, but, it is named `0001.png` for `cam2`, `cam3`, and `cam4`. So please rename `0001.png`, `0002.png`, and `0003.png` so that they have five-digit numbers.
+
+
 ## Training
 Run with default parameter (input image size: 500x480, output depth size: 512x256, disparity: 64). 
 ```bash
